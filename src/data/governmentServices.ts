@@ -12,13 +12,6 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     url: 'https://uidai.gov.in/',
   },
   {
-    id: 'ration-card',
-    name: 'Ration Card',
-    description: 'Apply for ration card for subsidized food grains',
-    category: 'documents',
-    icon: '🍚',
-  },
-  {
     id: 'pan-card',
     name: 'PAN Card',
     description: 'Apply for Permanent Account Number card',
@@ -34,6 +27,14 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     icon: '📘',
     url: 'https://www.passportindia.gov.in/',
   },
+  {
+    id: 'ration-card',
+    name: 'Ration Card',
+    description: 'Apply for ration card for subsidized food grains',
+    category: 'documents',
+    icon: '🍚',
+    url: 'https://nfsa.gov.in/',
+  },
 
   // Utilities
   {
@@ -42,6 +43,7 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'View and pay electricity bills online',
     category: 'utilities',
     icon: '⚡',
+    url: 'https://www.bijlimitra.com/',
   },
   {
     id: 'water-bill',
@@ -49,6 +51,7 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'View and pay water bills online',
     category: 'utilities',
     icon: '💧',
+    url: 'https://jal.gov.in/',
   },
   {
     id: 'gas-connection',
@@ -56,6 +59,7 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'Apply for new LPG gas connection',
     category: 'utilities',
     icon: '🔥',
+    url: 'https://www.iocl.com/',
   },
   {
     id: 'property-tax',
@@ -63,6 +67,7 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'Pay property tax online',
     category: 'utilities',
     icon: '🏠',
+    url: 'https://property.gov.in/',
   },
 
   // Health
@@ -88,6 +93,15 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'Apply for government health insurance schemes',
     category: 'health',
     icon: '🛡️',
+    url: 'https://www.pmjay.gov.in/',
+  },
+  {
+    id: 'medical-certificate',
+    name: 'Medical Certificate',
+    description: 'Apply for medical certificates and fitness documents',
+    category: 'health',
+    icon: '📋',
+    url: 'https://esanjeevaniopd.in/',
   },
 
   // Education
@@ -105,6 +119,7 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'Apply for government school admissions',
     category: 'education',
     icon: '🏫',
+    url: 'https://schooleducation.gov.in/',
   },
   {
     id: 'mid-day-meal',
@@ -112,6 +127,15 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'Register for mid day meal scheme',
     category: 'education',
     icon: '🍱',
+    url: 'https://mdm.gov.in/',
+  },
+  {
+    id: 'student-loan',
+    name: 'Student Loan',
+    description: 'Apply for educational loans',
+    category: 'education',
+    icon: '💰',
+    url: 'https://www.education.gov.in/',
   },
 
   // Grievance
@@ -129,6 +153,7 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'File police complaints online',
     category: 'grievance',
     icon: '👮',
+    url: 'https://cybercrime.gov.in/',
   },
   {
     id: 'consumer-complaint',
@@ -136,5 +161,6 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     description: 'File consumer grievances',
     category: 'grievance',
     icon: '🛒',
+    url: 'https://consumerhelpline.gov.in/',
   },
 ];

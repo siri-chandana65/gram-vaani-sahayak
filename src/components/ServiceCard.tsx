@@ -8,18 +8,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ServiceCardProps {
   service: GovernmentService;
-  onClick?: () => void;
 }
 
-export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onClick }) => {
+export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
   const { currentLanguage } = useLanguage();
   const isOnline = navigator.onLine;
 
   const handleClick = () => {
     if (service.url && isOnline) {
       window.open(service.url, '_blank', 'noopener,noreferrer');
-    } else if (onClick) {
-      onClick();
     }
   };
 
@@ -46,7 +43,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onClick }) =>
         'cursor-pointer transition-all duration-200 hover:shadow-md active:scale-95',
         'border-l-4',
         getCategoryColor(service.category),
-        !isOnline && service.url && 'opacity-60'
+        !isOnline && 'opacity-60'
       )}
       onClick={handleClick}
     >
@@ -77,15 +74,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, onClick }) =>
                 {service.category}
               </span>
               <div className="flex items-center gap-1">
-                {!isOnline && service.url ? (
+                {!isOnline ? (
                   <WifiOff className="h-4 w-4 text-red-500" />
-                ) : service.url ? (
+                ) : (
                   <>
                     <ExternalLink className="h-4 w-4 text-muted-foreground" />
                     <Wifi className="h-4 w-4 text-green-500" />
                   </>
-                ) : (
-                  <div className="h-4 w-4" /> // Spacer
                 )}
               </div>
             </div>

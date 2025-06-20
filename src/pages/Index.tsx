@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { MessageCircle, Bot, Wifi, WifiOff, LogOut, Sun, Moon } from 'lucide-react';
+import { MessageCircle, Bot, Wifi, WifiOff, LogOut, Sun, Moon, MessageSquare, Mic } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { ServiceCard } from '@/components/ServiceCard';
-import { ServiceApplicationForm } from '@/components/ServiceApplicationForm';
 import { FloatingVoiceButton } from '@/components/FloatingVoiceButton';
+import { FeedbackDialog } from '@/components/FeedbackDialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -22,26 +22,12 @@ const Index = () => {
   const { toast } = useToast();
   const [isLanguageSelectorOpen, setIsLanguageSelectorOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [selectedService, setSelectedService] = useState<{
-    type: string;
-    title: string;
-  } | null>(null);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   // Redirect to auth if not logged in
   if (!user && !isLoading) {
     return <Navigate to="/auth" replace />;
   }
-
-  const handleServiceClick = (serviceId: string, serviceName: string) => {
-    if (['ration-card', 'electricity-bill', 'water-bill'].includes(serviceId)) {
-      setSelectedService({ type: serviceId, title: serviceName });
-    } else {
-      toast({
-        title: "Service Information",
-        description: "This service integration is coming soon!",
-      });
-    }
-  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -56,7 +42,7 @@ const Index = () => {
       en: "Welcome to GramBot",
       hi: "ग्रामबॉट में आपका स्वागत है",
       te: "గ్రామ్‌బాట్‌కు స్వాగతం",
-      ta: "கிராம்பாட் க்கு வரவேற்கிறோம்",
+      ta: "கிராம்பாட் க்கு வரवேற்கிறோம்",
     };
     return greetings[currentLanguage.code as keyof typeof greetings] || greetings.en;
   };
@@ -142,7 +128,7 @@ const Index = () => {
       <main className="container mx-auto px-4 py-6 space-y-6 pb-24">
         {/* Welcome Section */} 
         <Card className="bg-gradient-to-r from-green-600 to-blue-600 text-white">
-          <CardContent className="p-6 text-center">
+          <CardContent className="p-6 text-center space-y-4">
             <h2 className={cn(
               'text-2xl font-bold mb-2',
               currentLanguage.fontClass
@@ -155,41 +141,61 @@ const Index = () => {
             )}>
               {getSubtitle()}
             </p>
-            <Link to="/chat">
-              <Button
-                size="lg"
-                className="bg-white text-green-600 hover:bg-gray-100 font-semibold touch-target"
-              >
-                <MessageCircle className="h-5 w-5 mr-2" />
-                {currentLanguage.code === 'hi' ? 'चैट शुरू करें' :
-                 currentLanguage.code === 'te' ? 'చాట్ ప్రారంభించండి' :
-                 currentLanguage.code === 'ta' ? 'அரட்டையைத் தொடங்கு' :
-                 'Start Chat'}
-              </Button>
-            </Link>
+            <div className="flex gap-3 justify-center">
+              <Link to="/chat">
+                <Button
+                  size="lg"
+                  className="bg-white text-green-600 hover:bg-gray-100 font-semibold touch-target"
+                >
+                  <MessageSquare className="h-5 w-5 mr-2" />
+                  {currentLanguage.code === 'hi' ? 'चैट शुरू करें' :
+                   currentLanguage.code === 'te' ? 'చాట్ ప్రారంభించండి' :
+                   currentLanguage.code === 'ta' ? 'அரட்டையைத் தொடங்கு' :
+                   'Start Chat'}
+                </Button>
+              </Link>
+              <Link to="/chat">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 font-semibold touch-target"
+                >
+                  <Mic className="h-5 w-5 mr-2" />
+                  {currentLanguage.code === 'hi' ? 'वॉयस चैट' :
+                   currentLanguage.code === 'te' ? 'వాయిస్ చాట్' :
+                   currentLanguage.code === 'ta' ? 'குரல் அரட்டை' :
+                   'Voice Chat'}
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
 
         {/* Available Services */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className={cn('flex items-center gap-2', currentLanguage.fontClass)}>
               <Bot className="h-5 w-5 text-green-600" />
-              {currentLanguage.code === 'hi' ? 'उपलब्ध सेवाएं' :
-               currentLanguage.code === 'te' ? 'అందుబాటులో ఉన్న సేవలు' :
-               currentLanguage.code === 'ta' ? 'கிடைக்கும் சேவைகள்' :
-               'Available Services'}
+              {currentLanguage.code === 'hi' ? 'सरकारी सेवाएं' :
+               currentLanguage.code === 'te' ? 'ప్రభుత్వ సేవలు' :
+               currentLanguage.code === 'ta' ? 'அரசு சேवைகள்' :
+               'Government Services'}
             </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsFeedbackOpen(true)}
+              className="text-sm"
+            >
+              {currentLanguage.code === 'hi' ? 'फीडबैक' :
+               currentLanguage.code === 'te' ? 'ఫీడ్‌బ్యాక్' :
+               currentLanguage.code === 'ta' ? 'கருத்து' :
+               'Feedback'}
+            </Button>
           </CardHeader>
           <CardContent className="space-y-3">
-            {GOVERNMENT_SERVICES.filter(service => 
-              ['ration-card', 'electricity-bill', 'water-bill'].includes(service.id)
-            ).map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                onClick={() => handleServiceClick(service.id, service.name)}
-              />
+            {GOVERNMENT_SERVICES.map((service) => (
+              <ServiceCard key={service.id} service={service} />
             ))}
           </CardContent>
         </Card>
@@ -210,7 +216,7 @@ const Index = () => {
                   <p className={cn('text-sm text-orange-700 dark:text-orange-300', currentLanguage.fontClass)}>
                     {currentLanguage.code === 'hi' ? 'कुछ सेवाएं सीमित हो सकती हैं' :
                      currentLanguage.code === 'te' ? 'కొన్ని సేవలు పరిమితం కావచ్చు' :
-                     currentLanguage.code === 'ta' ? 'சில சேவைகள்ை வரையறுக்கப்படலாம்' :
+                     currentLanguage.code === 'ta' ? 'சில சேவைகள் வரையறுக्கப्படலाम्' :
                      'Some services may be limited'}
                   </p>
                 </div>
@@ -223,12 +229,10 @@ const Index = () => {
       {/* Floating Voice Button */}
       <FloatingVoiceButton />
 
-      {/* Service Application Form */}
-      <ServiceApplicationForm
-        isOpen={!!selectedService}
-        onClose={() => setSelectedService(null)}
-        serviceType={selectedService?.type || ''}
-        serviceTitle={selectedService?.title || ''}
+      {/* Feedback Dialog */}
+      <FeedbackDialog
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
       />
     </div>
   );
