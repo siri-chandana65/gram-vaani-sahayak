@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Bot, Eye, EyeOff } from 'lucide-react';
+import { Bot, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { validateEmail, validatePassword, validateFullName, sanitizeText } from '@/utils/validation';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,6 +17,10 @@ const Auth = () => {
   const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [nameError, setNameError] = useState('');
+  const [attemptCount, setAttemptCount] = useState(0);
   const { user, signIn, signUp } = useAuth();
   const { toast } = useToast();
 
@@ -23,31 +28,92 @@ const Auth = () => {
     return <Navigate to="/" replace />;
   }
 
+  const validateForm = (): boolean => {
+    let isValid = true;
+    
+    // Reset errors
+    setEmailError('');
+    setPasswordErrors([]);
+    setNameError('');
+
+    // Email validation
+    if (!email || !validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      isValid = false;
+    }
+
+    // Password validation
+    if (!isLogin) {
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.isValid) {
+        setPasswordErrors(passwordValidation.errors);
+        isValid = false;
+      }
+    } else if (!password) {
+      setPasswordErrors(['Password is required']);
+      isValid = false;
+    }
+
+    // Full name validation for signup
+    if (!isLogin) {
+      if (!fullName || !validateFullName(fullName)) {
+        setNameError('Full name must be 2-100 characters and contain only letters and spaces');
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Rate limiting - simple client-side protection
+    if (attemptCount >= 5) {
+      toast({
+        title: "Too Many Attempts",
+        description: "Please wait a few minutes before trying again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
+          setAttemptCount(prev => prev + 1);
+          // Generic error message to prevent user enumeration
           toast({
-            title: "Error",
-            description: error.message,
+            title: "Authentication Failed",
+            description: "Invalid email or password. Please try again.",
             variant: "destructive",
           });
         } else {
+          setAttemptCount(0);
           toast({
             title: "Success",
             description: "Logged in successfully!",
           });
         }
       } else {
-        const { error } = await signUp(email, password, fullName);
+        const sanitizedName = sanitizeText(fullName);
+        const { error } = await signUp(email, password, sanitizedName);
         if (error) {
+          // More specific error for signup issues
+          let errorMessage = "Account creation failed. Please try again.";
+          if (error.message.includes('already registered')) {
+            errorMessage = "An account with this email already exists.";
+          }
           toast({
-            title: "Error",
-            description: error.message,
+            title: "Registration Failed",
+            description: errorMessage,
             variant: "destructive",
           });
         } else {
@@ -60,7 +126,7 @@ const Auth = () => {
     } catch (error) {
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -96,7 +162,14 @@ const Auth = () => {
                   onChange={(e) => setFullName(e.target.value)}
                   required
                   placeholder="Enter your full name"
+                  className={nameError ? 'border-red-500' : ''}
                 />
+                {nameError && (
+                  <div className="flex items-center gap-1 text-sm text-red-600">
+                    <AlertCircle className="h-4 w-4" />
+                    {nameError}
+                  </div>
+                )}
               </div>
             )}
             
@@ -109,7 +182,14 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Enter your email"
+                className={emailError ? 'border-red-500' : ''}
               />
+              {emailError && (
+                <div className="flex items-center gap-1 text-sm text-red-600">
+                  <AlertCircle className="h-4 w-4" />
+                  {emailError}
+                </div>
+              )}
             </div>
             
             <div className="space-y-2">
@@ -122,6 +202,7 @@ const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Enter your password"
+                  className={passwordErrors.length > 0 ? 'border-red-500' : ''}
                 />
                 <Button
                   type="button"
@@ -137,12 +218,27 @@ const Auth = () => {
                   )}
                 </Button>
               </div>
+              {passwordErrors.length > 0 && (
+                <div className="space-y-1">
+                  {passwordErrors.map((error, index) => (
+                    <div key={index} className="flex items-center gap-1 text-sm text-red-600">
+                      <AlertCircle className="h-4 w-4" />
+                      {error}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {!isLogin && (
+                <p className="text-xs text-muted-foreground">
+                  Password must be at least 8 characters with uppercase, lowercase, number, and special character
+                </p>
+              )}
             </div>
             
             <Button
               type="submit"
               className="w-full bg-green-600 hover:bg-green-700"
-              disabled={loading}
+              disabled={loading || attemptCount >= 5}
             >
               {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
             </Button>
@@ -151,7 +247,12 @@ const Auth = () => {
           <div className="mt-4 text-center">
             <Button
               variant="link"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setEmailError('');
+                setPasswordErrors([]);
+                setNameError('');
+              }}
               className="text-green-600 hover:text-green-700"
             >
               {isLogin 

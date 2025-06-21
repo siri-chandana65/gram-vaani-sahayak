@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { logSecurityEvent } from '@/utils/security';
 
 interface AuthContextType {
   user: User | null;
@@ -33,6 +34,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Log security events
+        if (event === 'SIGNED_IN') {
+          logSecurityEvent('user_signed_in', { 
+            userId: session?.user?.id,
+            email: session?.user?.email 
+          });
+        } else if (event === 'SIGNED_OUT') {
+          logSecurityEvent('user_signed_out');
+        } else if (event === 'TOKEN_REFRESHED') {
+          logSecurityEvent('token_refreshed');
+        }
       }
     );
 
@@ -48,31 +61,72 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signUp = async (email: string, password: string, fullName: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName,
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            full_name: fullName,
+          },
         },
-      },
-    });
-    
-    return { error };
+      });
+      
+      if (error) {
+        logSecurityEvent('signup_failed', { 
+          email, 
+          error: error.message 
+        });
+      } else {
+        logSecurityEvent('signup_successful', { email });
+      }
+      
+      return { error };
+    } catch (error) {
+      logSecurityEvent('signup_error', { 
+        email, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      return { error };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    return { error };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) {
+        logSecurityEvent('signin_failed', { 
+          email, 
+          error: error.message 
+        });
+      } else {
+        logSecurityEvent('signin_successful', { email });
+      }
+      
+      return { error };
+    } catch (error) {
+      logSecurityEvent('signin_error', { 
+        email, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      return { error };
+    }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+      logSecurityEvent('signout_successful');
+    } catch (error) {
+      logSecurityEvent('signout_error', { 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+    }
   };
 
   const value = {
