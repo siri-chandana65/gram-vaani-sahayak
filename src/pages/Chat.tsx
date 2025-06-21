@@ -62,7 +62,7 @@ const Chat = () => {
       en: "Hello! I'm your AI assistant. I can help you with government services, answer questions, and assist in your native language. How can I help you today?",
       hi: "नमस्ते! मैं आपका AI सहायक हूँ। मैं सरकारी सेवाओं में आपकी मदद कर सकता हूँ, सवालों के जवाब दे सकता हूँ, और आपकी मातृभाषा में सहायता कर सकता हूँ। आज मैं आपकी कैसे मदद कर सकता हूँ?",
       te: "నమస్కారం! నేను మీ AI సహాయకుడిని. నేను ప్రభుత్వ సేవలతో మీకు సహాయం చేయగలను, ప్రశ్నలకు సమాధానాలు ఇవ్వగలను, మరియు మీ మాతృభాషలో సహాయం చేయగలను. ఈరోజు నేను మీకు ఎలా సహాయం చేయగలను?",
-      ta: "வணக்கம்! நான் உங்கள் AI உதவியாளர். நான் அரசு சேवைகளில் உங்களுக்கு உதவ முடியும், கேள்விகளுக்கு பதில் சொல்ல முடியும், மற்றும் உங்கள் தாய்மொழியில் உதவி செய்ய முடியும். இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?",
+      ta: "வணக்கம்! நான் உங்கள் AI உதவியாளர். நான் அரசு சேவைகளில் உங்களுக்கு உதவ முடியும், கேள்விகளுக்கு பதில் சொல்ல முடியும், மற்றும் உங்கள் தாய்மொழியில் உதவி செய்ய முடியும். இன்று நான் உங்களுக்கு எப்படி உதவ முடியும்?",
     };
     return welcome[currentLanguage.code as keyof typeof welcome] || welcome.en;
   };
@@ -98,11 +98,11 @@ const Chat = () => {
       },
       ta: {
         aadhaar: "ஆதார் கார்டுக்கு நீங்கள் அருகிலுள்ள ஆதார் பதிவு மையத்தை பார்வையிடலாம் அல்லது uidai.gov.in இல் ஆன்லைன் அப்பாயின்ட்மென்ட் முன்பதிவு செய்யலாம். உங்களுக்கு அடையாள, முகவரி மற்றும் பிறந்த தேதி ஆதாரங்கள் தேவைப்படும். இந்த செயல்முறை இலவசம்.",
-        ration: "ரேஷன் கார்டு விண்ணப்பத்திற்கு, உங்கள் உள்ளூர் ரேஷன் கார்டு அலுவலகத்தை தொடர்பு கொள்ளுங்கள் அல்லது உங்கள் மாநில உணவு துறையின் வலைத்தளம் மூலம் ஆன்லைனில் விண்ணப்பிக்கவும். உங்களுக்கு குடும்ப வருமான ஆதாரம், முகவரி ஆதாரம் மற்றும் குடும்ப புகைப்படங்கள் தேவைப்படும்.",
-        health: "சுகாதார சேவைகளுக்கு, நீங்கள் ஆயுஷ்மான் பாரத் சுகாதார அட்டைகளுக்கு விண்ணப்பிக்கலாம், இது குடும்பத்திற்கு வருடத்திற்கு ₹5 லட்சம் வரை இலவச சிகிச்சையை வழங்குகிறது. உங்கள் அருகிலுள்ள காமன் சர்வீஸ் சென்டரை பார்வையிடுங்கள் அல்லது beneficiary.nha.gov.in இல் ஆன்லைனில் விண்ணப்பிக்கவும்.",
-        bill: "நீங்கள் பல்வேறு அரசு போர்ட்டல்கள் அல்லது மொபைல் ஆப்ஸ் மூலம் பயன்பாட்டு கட்டணங்களை ஆன்லைனில் செலுத்தலாம். பெரும்பாலான மாநில மின்சார வாரியங்கள் மற்றும் நீர் துறைகள் ஆன்லைன் கட்டண விருப்பங்களை கொண்டுள்ளன. நீங்கள் UPI அல்லது நெட் பேங்கிங்கையும் பயன்படுத்தலாம்.",
-        scholarship: "கல்வி உதவித்தொகைகளுக்கு, தேசிய உதவித்தொகை போர்ட்டலான scholarships.gov.in ஐ பார்வையிடுங்கள். நீங்கள் தகுதி, வருமானம் மற்றும் வகையின் அடிப்படையில் பல்வேறு மத்திய மற்றும் மாநில அரசு உதவித்தொகைகளை காணலாம்.",
-        default: "உங்கள் கேள்விக்கு நன்றி. நான் அரசு சேவைகள் மற்றும் தகவல்களில் உங்களுக்கு உதவ இங்கே இருக்கிறேன். உங்களுக்கு எதில் உதவி தேவை என்பதை தயவுசெய்து மேலும் விரிவாக சொல்ல முடியுமா?"
+        ration: "ரேஷன் கார்டு விண்ணப்பத்திற்கு, உங்கள் உள்ளூர் ரேஷன் கார்டு அலுவலகத்தை தொடர்பு கொள்ளுங்கள் அல்லது உங்கள் மாநில உணவு துறையின் வலைத்தளம் மூலம் ஆன்லайனில் விண்ணப்பிக்கவும். உங்களுக்கு குடும்ப வருமான ஆதாரம், முகவரி ஆதாரம் மற்றும் குடும்ப புகைப்படங்கள் தேவைப्படும்.",
+        health: "சுகாதார சேவைகளுக்கு, நீங்கள் ஆயுஷ்மான் பாரத் சுகாதார அட்டைகளுக்கு விண்ணப்பிக்கலாம், இது குடும்பத்திற்கு வருடத்திற்கு ₹5 லட்சம் வரை இலவச சிகிச்சையை வழங்குகிறது. உங்கள் அருகிலுள்ள காமன் சர்வீஸ் சென்டரை பார்வையிடுங்கள் அல்லது beneficiary.nha.gov.in இல் ஆன்లைனில் விண्णப्பिक्கवुम्.",
+        bill: "நீங்கள் பல்வேறு அரசு போर்ட்டல்கள் அல்லது மொபைல் ஆப்ஸ் மூலம் பயன்பाட்டு கட்டணங்களை ஆன்லைனில் செலுत্तலாम். பெரும்பாலான மாநில மின்சார வாரியங்கள் மற்றும் நீர் துறைகள் ஆன்लைன் கட்டண விருப্பங்களை கொண्டுल్ளন. நீங்கள் UPI அல्लது नेट् बैङ्किङ्गैयुम् पयन्पडुत्तलाম्.",
+        scholarship: "கல्வि உதవित्தोकैगळुक्கु, தேশीয উதவित्தோकै पोर्टลான scholarships.gov.in ऐ पार्वैयिडुङ्गळ्. नीङ्गळ् तगुति, वारुमानम् मत्रुम् वर्गत्तिन् आधारङ्गळिल् पल्वेறु केन्द्र मत्रुम् मानिल अरसु उதवित्तोकैगळै कानुगोन्डलाम्.",
+        default: "உങ্கল् केळ्विक्कु नन्रि. नान् अरसु सेवैगळ् मत्रुम् समाचारत्तिल् उङ्गळुक्कु उतवि सेय्य इक्कडे इरुक्किറेन्. उङ्गळुक्कु एमिल् उतवि वेण्डुम् एन्पतै तयवुसेय्तु मेरिन्तु विरिवाग सोल्ल मुडियुमा?"
       }
     };
 
@@ -115,13 +115,13 @@ const Chat = () => {
     if (lowerText.includes('ration') || lowerText.includes('राशन') || lowerText.includes('రేషన్') || lowerText.includes('ரேஷன்')) {
       return langResponses.ration;
     }
-    if (lowerText.includes('health') || lowerText.includes('स्वास्थ्य') || lowerText.includes('ఆరోగ్యం') || lowerText.includes('சுகாதார')) {
+    if (lowerText.includes('health') || lowerText.includes('स्वास्थ्य') || lowerText.includes('ఆరోగ్యం') || lowerText.includes('சுகाதার')) {
       return langResponses.health;
     }
-    if (lowerText.includes('bill') || lowerText.includes('बिल') || lowerText.includes('బిల్లు') || lowerText.includes('கட்டணம்')) {
+    if (lowerText.includes('bill') || lowerText.includes('बिल') || lowerText.includes('బિల্লు') || lowerText.includes('கট্டणम्')) {
       return langResponses.bill;
     }
-    if (lowerText.includes('scholarship') || lowerText.includes('छात्रवृत्ति') || lowerText.includes('స్కాలర్‌షిప్') || lowerText.includes('உதவித்தொகை')) {
+    if (lowerText.includes('scholarship') || lowerText.includes('छात्रवृत्ति') || lowerText.includes('స্কালর্‌షিপ্') || lowerText.includes('उतवित्तोकै')) {
       return langResponses.scholarship;
     }
     
@@ -158,7 +158,7 @@ const Chat = () => {
 
       setMessages(prev => [...prev, aiMessage]);
       
-      // Speak the response
+      // Speak the response in the user's language
       setTimeout(() => {
         speak(aiResponseText);
       }, 300);
@@ -217,38 +217,38 @@ const Chat = () => {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-blue-50 flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center gap-3">
+        <div className="container mx-auto px-3 sm:px-4 py-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleGoBack}
-              className="h-10 w-10 p-0"
+              className="h-8 w-8 sm:h-10 sm:w-10 p-0"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <div className="flex-1">
-              <h1 className={cn('text-lg font-bold', currentLanguage.fontClass)}>
+              <h1 className={cn('text-base sm:text-lg font-bold', currentLanguage.fontClass)}>
                 {currentLanguage.code === 'hi' ? 'AI सहायक' :
                  currentLanguage.code === 'te' ? 'AI సహాయకుడు' :
-                 currentLanguage.code === 'ta' ? 'AI உதவியாळர்' :
+                 currentLanguage.code === 'ta' ? 'AI उतवियाळर्' :
                  'AI Assistant'}
               </h1>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {isListening ? (
                   currentLanguage.code === 'hi' ? 'सुन रहा हूँ...' :
-                  currentLanguage.code === 'te' ? 'వింటున్నాను...' :
-                  currentLanguage.code === 'ta' ? 'கேट்டுक्कொण्डिरुक्किறेन्...' :
+                  currentLanguage.code === 'te' ? 'వింటున्नाను...' :
+                  currentLanguage.code === 'ta' ? 'केट्टुक्कोण्डिरुक्किறेन्...' :
                   'Listening...'
                 ) : isSpeaking ? (
                   currentLanguage.code === 'hi' ? 'बोल रहा हूँ...' :
-                  currentLanguage.code === 'te' ? 'మాట్లాడుతున్నాను...' :
-                  currentLanguage.code === 'ta' ? 'पेसिक्कोण्डिरुक्किறेन्...' :
+                  currentLanguage.code === 'te' ? 'మాట్లाडుతున्नाను...' :
+                  currentLanguage.code === 'ta' ? 'पेसिक्कोण्डिরुक्किறेन्...' :
                   'Speaking...'
                 ) : (
                   currentLanguage.code === 'hi' ? 'ऑनलाइन' :
                   currentLanguage.code === 'te' ? 'ఆన్‌లైన్' :
-                  currentLanguage.code === 'ta' ? 'ஆன்லைன்' :
+                  currentLanguage.code === 'ta' ? 'आन्लैन्' :
                   'Online'
                 )}
               </p>
@@ -259,21 +259,21 @@ const Chat = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto">
-        <div className="container mx-auto px-4 py-4">
-          <div className="max-w-2xl mx-auto space-y-4">
+        <div className="container mx-auto px-3 sm:px-4 py-4">
+          <div className="max-w-4xl mx-auto space-y-4">
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
             
             {(isProcessing || isTranslating) && (
               <div className="flex justify-center">
-                <Card className="p-4">
+                <Card className="p-3 sm:p-4">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className={cn('text-sm', currentLanguage.fontClass)}>
                       {currentLanguage.code === 'hi' ? 'प्रोसेसिंग...' :
-                       currentLanguage.code === 'te' ? 'ప్రాసెసింగ్...' :
-                       currentLanguage.code === 'ta' ? 'செயలाक्कम्...' :
+                       currentLanguage.code === 'te' ? 'ప्राسेसिङ्ग్...' :
+                       currentLanguage.code === 'ta' ? 'सेयलाक्कम्...' :
                        'Processing...'}
                     </span>
                   </div>
@@ -288,9 +288,9 @@ const Chat = () => {
 
       {/* Input */}
       <div className="sticky bottom-0 bg-white/80 backdrop-blur-md border-t">
-        <div className="container mx-auto px-4 py-4">
-          <div className="max-w-2xl mx-auto">
-            <form onSubmit={handleSubmit} className="flex items-center gap-3">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="max-w-4xl mx-auto">
+            <form onSubmit={handleSubmit} className="flex items-center gap-2 sm:gap-3">
               <div className="flex-1 relative">
                 <Input
                   ref={inputRef}
@@ -299,19 +299,19 @@ const Chat = () => {
                   placeholder={
                     currentLanguage.code === 'hi' ? 'अपना संदेश टाइप करें...' :
                     currentLanguage.code === 'te' ? 'మీ సందేశాన్ని టైప్ చేయండి...' :
-                    currentLanguage.code === 'ta' ? 'उमगळ् सेय्तियै तट्टच्चु सेय्युंगळ्...' :
+                    currentLanguage.code === 'ta' ? 'उमगळ् सेय्तियै तट्टच्चु सेय्युङ्गै...' :
                     'Type your message...'
                   }
-                  className={cn('pr-12 h-12 text-base', currentLanguage.fontClass)}
+                  className={cn('pr-10 sm:pr-12 h-10 sm:h-12 text-sm sm:text-base', currentLanguage.fontClass)}
                   disabled={isProcessing || isListening}
                 />
                 <Button
                   type="submit"
                   size="sm"
                   disabled={!inputText.trim() || isProcessing || isListening}
-                  className="absolute right-1 top-1 h-10 w-10 p-0"
+                  className="absolute right-1 top-1 h-8 w-8 sm:h-10 sm:w-10 p-0"
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
               
@@ -321,14 +321,15 @@ const Chat = () => {
                 onStartListening={handleVoiceStart}
                 onStopListening={stopListening}
                 disabled={isProcessing || !isSupported}
+                className="h-10 w-10 sm:h-12 sm:w-12"
               />
             </form>
             
             {!isSupported && (
               <p className="text-xs text-muted-foreground text-center mt-2">
                 {currentLanguage.code === 'hi' ? 'वॉयस इनपुट समर्थित नहीं है' :
-                 currentLanguage.code === 'te' ? 'వాయిస్ ఇన్‌పుట్ మద్దతు లేదు' :
-                 currentLanguage.code === 'ta' ? 'कुरळ् उळ्ळीडु आतरिक्कप्पडवில्लै' :
+                 currentLanguage.code === 'te' ? 'వાయిস్ ఇన్‌పుట్ మద్దతు లేదు' :
+                 currentLanguage.code === 'ta' ? 'कुरळ् उळ्ळीडु आतरिक्कप्पडविल्लै' :
                  'Voice input not supported'}
               </p>
             )}

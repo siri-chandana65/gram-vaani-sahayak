@@ -34,7 +34,7 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
       onClick={handleClick}
       disabled={disabled}
       className={cn(
-        'relative h-16 w-16 rounded-full p-0 touch-target',
+        'relative rounded-full p-0 touch-target shrink-0',
         'bg-primary hover:bg-primary-600 active:bg-primary-700',
         'transition-all duration-200 transform active:scale-95',
         'focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2',
@@ -53,11 +53,11 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
       }
     >
       {isSpeaking ? (
-        <Volume2 className="h-6 w-6 text-white" />
+        <Volume2 className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
       ) : isListening ? (
-        <MicOff className="h-6 w-6 text-white" />
+        <MicOff className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
       ) : (
-        <Mic className="h-6 w-6 text-white" />
+        <Mic className="h-4 w-4 sm:h-6 sm:w-6 text-white" />
       )}
       
       {isListening && (

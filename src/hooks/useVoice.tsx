@@ -30,6 +30,22 @@ export const useVoice = () => {
     }
   }, []);
 
+  const getLanguageCode = (langCode: string) => {
+    const languageMap: Record<string, string> = {
+      'en': 'en-IN',
+      'hi': 'hi-IN',
+      'te': 'te-IN',
+      'ta': 'ta-IN',
+      'kn': 'kn-IN',
+      'ml': 'ml-IN',
+      'gu': 'gu-IN',
+      'mr': 'mr-IN',
+      'pa': 'pa-IN',
+      'bn': 'bn-IN'
+    };
+    return languageMap[langCode] || 'en-IN';
+  };
+
   const startListening = useCallback((
     onResult: (transcript: string) => void,
     onError?: (error: string) => void
@@ -37,11 +53,7 @@ export const useVoice = () => {
     if (!recognitionRef.current || isListening) return;
 
     try {
-      recognitionRef.current.lang = currentLanguage.code === 'en' ? 'en-IN' : 
-                                   currentLanguage.code === 'hi' ? 'hi-IN' :
-                                   currentLanguage.code === 'te' ? 'te-IN' :
-                                   currentLanguage.code === 'ta' ? 'ta-IN' :
-                                   'en-IN';
+      recognitionRef.current.lang = getLanguageCode(currentLanguage.code);
 
       recognitionRef.current.onstart = () => {
         setIsListening(true);
@@ -77,6 +89,28 @@ export const useVoice = () => {
     }
   }, [isListening]);
 
+  const findBestVoice = useCallback((language: string) => {
+    if (!synthRef.current) return null;
+
+    const voices = synthRef.current.getVoices();
+    const langCode = getLanguageCode(language);
+    
+    // Priority order: exact language match > language family match > fallback
+    const priorities = [
+      (voice: SpeechSynthesisVoice) => voice.lang === langCode,
+      (voice: SpeechSynthesisVoice) => voice.lang.startsWith(language),
+      (voice: SpeechSynthesisVoice) => voice.lang.includes('IN'), // Indian voices
+      (voice: SpeechSynthesisVoice) => voice.default // Default system voice
+    ];
+
+    for (const priority of priorities) {
+      const voice = voices.find(priority);
+      if (voice) return voice;
+    }
+
+    return voices[0] || null;
+  }, []);
+
   const speak = useCallback((text: string, settings?: Partial<VoiceSettings>) => {
     if (!synthRef.current || !text) return;
 
@@ -85,26 +119,17 @@ export const useVoice = () => {
 
     const utterance = new SpeechSynthesisUtterance(text);
     
-    // Set language-specific voice
-    const voices = synthRef.current.getVoices();
-    const languageVoice = voices.find(voice => 
-      voice.lang.startsWith(currentLanguage.code) ||
-      (currentLanguage.code === 'hi' && voice.lang.includes('hi')) ||
-      (currentLanguage.code === 'te' && voice.lang.includes('te')) ||
-      (currentLanguage.code === 'ta' && voice.lang.includes('ta'))
-    );
-
-    if (languageVoice) {
-      utterance.voice = languageVoice;
+    // Set language and find appropriate voice
+    utterance.lang = getLanguageCode(currentLanguage.code);
+    const bestVoice = findBestVoice(currentLanguage.code);
+    
+    if (bestVoice) {
+      utterance.voice = bestVoice;
+      console.log(`Using voice: ${bestVoice.name} (${bestVoice.lang}) for language: ${currentLanguage.code}`);
     }
 
-    utterance.lang = currentLanguage.code === 'en' ? 'en-IN' : 
-                    currentLanguage.code === 'hi' ? 'hi-IN' :
-                    currentLanguage.code === 'te' ? 'te-IN' :
-                    currentLanguage.code === 'ta' ? 'ta-IN' :
-                    'en-IN';
-
-    utterance.rate = settings?.rate ?? 0.9;
+    // Adjust speech settings for better regional pronunciation
+    utterance.rate = settings?.rate ?? (currentLanguage.code === 'en' ? 0.9 : 0.8);
     utterance.pitch = settings?.pitch ?? 1;
     utterance.volume = settings?.volume ?? 1;
 
@@ -115,8 +140,17 @@ export const useVoice = () => {
       setIsSpeaking(false);
     };
 
-    synthRef.current.speak(utterance);
-  }, [currentLanguage.code]);
+    // Wait for voices to be loaded before speaking
+    if (synthRef.current.getVoices().length === 0) {
+      synthRef.current.onvoiceschanged = () => {
+        const voice = findBestVoice(currentLanguage.code);
+        if (voice) utterance.voice = voice;
+        synthRef.current?.speak(utterance);
+      };
+    } else {
+      synthRef.current.speak(utterance);
+    }
+  }, [currentLanguage.code, findBestVoice]);
 
   const stopSpeaking = useCallback(() => {
     if (synthRef.current) {
