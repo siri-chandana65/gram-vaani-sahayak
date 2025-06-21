@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Wifi, WifiOff } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { GovernmentService } from '@/types';
 import { cn } from '@/lib/utils';
@@ -41,20 +41,20 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
     <Card 
       className={cn(
         'cursor-pointer transition-all duration-200 hover:shadow-md active:scale-95',
-        'border-l-4',
+        'border-l-4 touch-target',
         getCategoryColor(service.category),
         !isOnline && 'opacity-60'
       )}
       onClick={handleClick}
     >
-      <CardContent className="p-4">
+      <CardContent className="p-3 sm:p-4">
         <div className="flex items-start gap-3">
-          <div className="text-2xl flex-shrink-0 mt-1">
+          <div className="text-xl sm:text-2xl flex-shrink-0 mt-1">
             {service.icon}
           </div>
           <div className="flex-1 min-w-0">
             <h3 className={cn(
-              'font-semibold text-lg mb-1 line-clamp-2',
+              'font-semibold text-base sm:text-lg mb-1 line-clamp-2',
               currentLanguage.fontClass
             )}>
               {service.name}
@@ -74,14 +74,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
                 {service.category}
               </span>
               <div className="flex items-center gap-1">
-                {!isOnline ? (
-                  <WifiOff className="h-4 w-4 text-red-500" />
-                ) : (
-                  <>
-                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                    <Wifi className="h-4 w-4 text-green-500" />
-                  </>
-                )}
+                <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
               </div>
             </div>
           </div>

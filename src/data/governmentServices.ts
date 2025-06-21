@@ -122,14 +122,6 @@ export const GOVERNMENT_SERVICES: GovernmentService[] = [
     url: 'https://schooleducation.gov.in/',
   },
   {
-    id: 'mid-day-meal',
-    name: 'Mid Day Meal',
-    description: 'Register for mid day meal scheme',
-    category: 'education',
-    icon: '🍱',
-    url: 'https://mdm.gov.in/',
-  },
-  {
     id: 'student-loan',
     name: 'Student Loan',
     description: 'Apply for educational loans',

@@ -1,264 +1,254 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PasswordValidation } from '@/components/PasswordValidation';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
-import { Bot, Eye, EyeOff, AlertCircle } from 'lucide-react';
-import { validateEmail, validatePassword, validateFullName, sanitizeText } from '@/utils/validation';
+import { validateEmail, validatePassword, validateFullName, validatePhone } from '@/utils/validation';
+import { cn } from '@/lib/utils';
 
 const Auth = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [emailError, setEmailError] = useState('');
-  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
-  const [nameError, setNameError] = useState('');
-  const [attemptCount, setAttemptCount] = useState(0);
-  const { user, signIn, signUp } = useAuth();
+  const { user, signIn, signUp, isLoading } = useAuth();
+  const { currentLanguage, t } = useLanguage();
   const { toast } = useToast();
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+    phone: '',
+    location: '',
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (user) {
+  // Redirect if already authenticated
+  if (user && !isLoading) {
     return <Navigate to="/" replace />;
   }
 
-  const validateForm = (): boolean => {
-    let isValid = true;
-    
-    // Reset errors
-    setEmailError('');
-    setPasswordErrors([]);
-    setNameError('');
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
 
-    // Email validation
-    if (!email || !validateEmail(email)) {
-      setEmailError('Please enter a valid email address');
-      isValid = false;
+    if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
 
-    // Password validation
-    if (!isLogin) {
-      const passwordValidation = validatePassword(password);
-      if (!passwordValidation.isValid) {
-        setPasswordErrors(passwordValidation.errors);
-        isValid = false;
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      newErrors.password = 'Password does not meet requirements';
+    }
+
+    if (isSignUp) {
+      if (!validateFullName(formData.fullName)) {
+        newErrors.fullName = 'Please enter a valid full name (2-100 characters, letters only)';
       }
-    } else if (!password) {
-      setPasswordErrors(['Password is required']);
-      isValid = false;
-    }
 
-    // Full name validation for signup
-    if (!isLogin) {
-      if (!fullName || !validateFullName(fullName)) {
-        setNameError('Full name must be 2-100 characters and contain only letters and spaces');
-        isValid = false;
+      if (formData.phone && !validatePhone(formData.phone)) {
+        newErrors.phone = 'Please enter a valid 10-digit phone number';
       }
     }
 
-    return isValid;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Rate limiting - simple client-side protection
-    if (attemptCount >= 5) {
-      toast({
-        title: "Too Many Attempts",
-        description: "Please wait a few minutes before trying again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     if (!validateForm()) {
       return;
     }
 
-    setLoading(true);
+    setIsSubmitting(true);
 
     try {
-      if (isLogin) {
-        const { error } = await signIn(email, password);
+      if (isSignUp) {
+        const { error } = await signUp(
+          formData.email,
+          formData.password,
+          {
+            full_name: formData.fullName,
+            phone: formData.phone,
+            location: formData.location,
+          }
+        );
+
         if (error) {
-          setAttemptCount(prev => prev + 1);
-          // Generic error message to prevent user enumeration
           toast({
-            title: "Authentication Failed",
-            description: "Invalid email or password. Please try again.",
+            title: "Sign Up Failed",
+            description: error,
             variant: "destructive",
           });
         } else {
-          setAttemptCount(0);
           toast({
-            title: "Success",
-            description: "Logged in successfully!",
+            title: "Account Created",
+            description: "Please check your email to verify your account.",
           });
         }
       } else {
-        const sanitizedName = sanitizeText(fullName);
-        const { error } = await signUp(email, password, sanitizedName);
+        const { error } = await signIn(formData.email, formData.password);
+
         if (error) {
-          // More specific error for signup issues
-          let errorMessage = "Account creation failed. Please try again.";
-          if (error.message.includes('already registered')) {
-            errorMessage = "An account with this email already exists.";
-          }
           toast({
-            title: "Registration Failed",
-            description: errorMessage,
+            title: "Sign In Failed",
+            description: error,
             variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Success",
-            description: "Account created successfully! Please check your email for verification.",
           });
         }
       }
     } catch (error) {
+      console.error('Auth error:', error);
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
-              <Bot className="h-8 w-8 text-white" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl font-bold text-green-800 dark:text-green-400">
-            Welcome to GramBot
+          <CardTitle className={cn('text-xl sm:text-2xl', currentLanguage.fontClass)}>
+            {isSignUp ? t('signUp') : t('signIn')}
           </CardTitle>
-          <p className="text-muted-foreground">
-            {isLogin ? 'Sign in to your account' : 'Create your account'}
-          </p>
+          <CardDescription className={currentLanguage.fontClass}>
+            {isSignUp ? t('createAccount') : 'Welcome back to GramBot'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
+            {isSignUp && (
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="fullName" className={currentLanguage.fontClass}>
+                  {t('fullName')}
+                </Label>
                 <Input
                   id="fullName"
                   type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  className={cn('touch-target', currentLanguage.fontClass)}
                   required
-                  placeholder="Enter your full name"
-                  className={nameError ? 'border-red-500' : ''}
                 />
-                {nameError && (
-                  <div className="flex items-center gap-1 text-sm text-red-600">
-                    <AlertCircle className="h-4 w-4" />
-                    {nameError}
-                  </div>
+                {errors.fullName && (
+                  <p className="text-sm text-red-600">{errors.fullName}</p>
                 )}
               </div>
             )}
-            
+
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className={currentLanguage.fontClass}>
+                {t('email')}
+              </Label>
               <Input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={(e) => handleInput Change('email', e.target.value)}
+                className={cn('touch-target', currentLanguage.fontClass)}
                 required
-                placeholder="Enter your email"
-                className={emailError ? 'border-red-500' : ''}
               />
-              {emailError && (
-                <div className="flex items-center gap-1 text-sm text-red-600">
-                  <AlertCircle className="h-4 w-4" />
-                  {emailError}
-                </div>
+              {errors.email && (
+                <p className="text-sm text-red-600">{errors.email}</p>
               )}
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="Enter your password"
-                  className={passwordErrors.length > 0 ? 'border-red-500' : ''}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {passwordErrors.length > 0 && (
-                <div className="space-y-1">
-                  {passwordErrors.map((error, index) => (
-                    <div key={index} className="flex items-center gap-1 text-sm text-red-600">
-                      <AlertCircle className="h-4 w-4" />
-                      {error}
-                    </div>
-                  ))}
-                </div>
+              <Label htmlFor="password" className={currentLanguage.fontClass}>
+                {t('password')}
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                value={formData.password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                className={cn('touch-target', currentLanguage.fontClass)}
+                required
+              />
+              {errors.password && (
+                <p className="text-sm text-red-600">{errors.password}</p>
               )}
-              {!isLogin && (
-                <p className="text-xs text-muted-foreground">
-                  Password must be at least 8 characters with uppercase, lowercase, number, and special character
-                </p>
-              )}
+              <PasswordValidation password={formData.password} />
             </div>
-            
+
+            {isSignUp && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className={currentLanguage.fontClass}>
+                    {t('phone')} (Optional)
+                  </Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    className={cn('touch-target', currentLanguage.fontClass)}
+                  />
+                  {errors.phone && (
+                    <p className="text-sm text-red-600">{errors.phone}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="location" className={currentLanguage.fontClass}>
+                    {t('location')} (Optional)
+                  </Label>
+                  <Input
+                    id="location"
+                    type="text"
+                    value={formData.location}
+                    onChange={(e) => handleInputChange('location', e.target.value)}
+                    className={cn('touch-target', currentLanguage.fontClass)}
+                  />
+                </div>
+              </>
+            )}
+
             <Button
               type="submit"
-              className="w-full bg-green-600 hover:bg-green-700"
-              disabled={loading || attemptCount >= 5}
+              className={cn('w-full touch-target', currentLanguage.fontClass)}
+              disabled={isSubmitting}
             >
-              {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
+              {isSubmitting ? 'Processing...' : (isSignUp ? t('createAccount') : t('signIn'))}
             </Button>
           </form>
-          
+
           <div className="mt-4 text-center">
             <Button
               variant="link"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setEmailError('');
-                setPasswordErrors([]);
-                setNameError('');
-              }}
-              className="text-green-600 hover:text-green-700"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className={cn('text-sm', currentLanguage.fontClass)}
             >
-              {isLogin 
-                ? "Don't have an account? Sign up" 
-                : 'Already have an account? Sign in'
-              }
+              {isSignUp ? t('alreadyHaveAccount') : t('dontHaveAccount')}
             </Button>
           </div>
         </CardContent>
