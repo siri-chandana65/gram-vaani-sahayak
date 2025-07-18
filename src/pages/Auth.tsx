@@ -82,7 +82,7 @@ const Auth = () => {
         if (error) {
           toast({
             title: "Sign Up Failed",
-            description: error,
+            description: error.message || "An error occurred during sign up",
             variant: "destructive",
           });
         } else {
@@ -97,7 +97,7 @@ const Auth = () => {
         if (error) {
           toast({
             title: "Sign In Failed",
-            description: error,
+            description: error.message || "An error occurred during sign in",
             variant: "destructive",
           });
         }
