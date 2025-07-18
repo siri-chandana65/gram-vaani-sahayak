@@ -60,7 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, userData: { full_name: string; phone?: string; location?: string; }) => {
-    const redirectUrl = `${window.location.origin}/`;
+    // Use the project URL instead of window.location.origin to fix email verification redirect
+    const redirectUrl = 'https://3d141cd2-f92f-4e69-a174-9b7bd762e30c.lovableproject.com/';
     
     try {
       const { error } = await supabase.auth.signUp({
