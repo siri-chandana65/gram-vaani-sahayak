@@ -173,7 +173,7 @@ const Auth = () => {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => handleInput Change('email', e.target.value)}
+                onChange={(e) => handleInputChange('email', e.target.value)}
                 className={cn('touch-target', currentLanguage.fontClass)}
                 required
               />
